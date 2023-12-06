@@ -1,7 +1,8 @@
-pub fn parse_nums<T>(input: impl AsRef<str>) -> Vec<T>
+pub fn parse_nums<Output, Item>(input: impl AsRef<str>) -> Output
 where
-    T: std::str::FromStr,
-    <T as std::str::FromStr>::Err: std::fmt::Debug,
+    Output: FromIterator<Item>,
+    Item: std::str::FromStr,
+    <Item as std::str::FromStr>::Err: std::fmt::Debug,
 {
     input
         .as_ref()

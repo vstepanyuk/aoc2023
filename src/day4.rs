@@ -1,5 +1,7 @@
 use std::{collections::HashSet, str::FromStr};
 
+use aoc::parse_nums;
+
 const INPUT: &str = include_str!("../input/day4.txt");
 
 #[derive(Debug)]
@@ -15,23 +17,13 @@ impl FromStr for Card {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let s = s.replace("Card ", "");
         let (id, nums) = s.split_once(':').unwrap();
-        let (winning, yours) = nums.split_once(" | ").unwrap();
-
+        let (winning, numbers) = nums.split_once(" | ").unwrap();
         let id = id.trim().parse().unwrap();
-        let winning = winning
-            .split_whitespace()
-            .filter_map(|n| n.parse().ok())
-            .collect();
-
-        let numbers = yours
-            .split_whitespace()
-            .filter_map(|n| n.parse().ok())
-            .collect();
 
         Ok(Self {
             id,
-            winning,
-            numbers,
+            winning: parse_nums(winning),
+            numbers: parse_nums(numbers),
         })
     }
 }

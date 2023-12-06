@@ -1,12 +1,14 @@
 use std::str::FromStr;
 
+use aoc::parse_nums;
+
 const INPUT: &str = include_str!("../input/day5.txt");
 
 type Element = u64;
 
 fn main() {
-    println!("Day 5, part 1: {}", part1(INPUT));
-    println!("Day 5, part 2: {}", part2(INPUT));
+    println!("Part 1: {}", part1(INPUT));
+    println!("Part 2: {}", part2(INPUT));
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -20,13 +22,13 @@ impl FromStr for Map {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut iter = s.split_whitespace();
+        let nums: Vec<Element> = parse_nums(s);
 
-        let dst = iter.next().unwrap().parse::<Element>().unwrap();
-        let src = iter.next().unwrap().parse::<Element>().unwrap();
-        let len = iter.next().unwrap().parse::<Element>().unwrap();
-
-        Ok(Map { dst, src, len })
+        Ok(Map {
+            dst: nums[0],
+            src: nums[1],
+            len: nums[2],
+        })
     }
 }
 
@@ -45,19 +47,16 @@ struct Category(Vec<Map>);
 
 impl Category {
     fn to_dst(&self, input: Element) -> Element {
-        let found = self.0.iter().find_map(|map| map.to_dst(input));
-        found.unwrap_or(input)
+        self.0
+            .iter()
+            .find_map(|map| map.to_dst(input))
+            .unwrap_or(input)
     }
 }
 
 fn parse(input: &str) -> (Vec<Element>, Vec<Category>) {
     let mut lines = input.lines();
-    let seeds = lines
-        .next()
-        .unwrap()
-        .split_whitespace()
-        .flat_map(|item| item.parse::<Element>().ok())
-        .collect::<Vec<_>>();
+    let seeds: Vec<u64> = parse_nums(lines.next().unwrap());
 
     let mut categories = vec![];
     let mut category = Category(vec![]);

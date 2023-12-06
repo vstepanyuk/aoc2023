@@ -87,8 +87,8 @@ impl Schematic {
 
 fn main() {
     let s = Schematic::from_str(INPUT).unwrap();
-    println!("Day 3, part 1: {}", part1(&s));
-    println!("Day 3, part 2: {}", part2(&s));
+    println!("Part 1: {}", part1(&s));
+    println!("Part 2: {}", part2(&s));
 }
 
 fn part1(s: &Schematic) -> i32 {

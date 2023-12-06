@@ -60,8 +60,8 @@ impl FromStr for Game {
 }
 
 fn main() {
-    println!("Day 2, Part 1: {}", part1(INPUT));
-    println!("Day 2, Part 2: {}", part2(INPUT));
+    println!("Part 1: {}", part1(INPUT));
+    println!("Part 2: {}", part2(INPUT));
 }
 
 fn part1(input: &str) -> i32 {

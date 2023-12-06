@@ -4,8 +4,8 @@ const DIGITS_NAMED: [&str; 9] = [
 ];
 
 fn main() {
-    println!("Day 1, part 1: {}", solve(INPUT, &[]));
-    println!("Day 1, part 2: {}", solve(INPUT, &DIGITS_NAMED));
+    println!("Part 1: {}", solve(INPUT, &[]));
+    println!("Part 2: {}", solve(INPUT, &DIGITS_NAMED));
 }
 
 trait DigitContainer {
