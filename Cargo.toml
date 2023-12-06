@@ -1,0 +1,34 @@
+[package]
+name = "aoc2023"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "day1"
+path = "src/day1.rs"
+
+[[bin]]
+name = "day2"
+path = "src/day2.rs"
+
+[[bin]]
+name = "day3"
+path = "src/day3.rs"
+
+[[bin]]
+name = "day4"
+path = "src/day4.rs"
+
+[[bin]]
+name = "day5"
+path = "src/day5.rs"
+
+[[bin]]
+name = "day6"
+path = "src/day6.rs"
+
+[lib]
+name = "aoc"
+
+[dependencies]
+itertools = "0.12.0"
