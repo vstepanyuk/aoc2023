@@ -8,8 +8,8 @@ fn main() {
 
 fn solve(input: impl AsRef<str>) -> u64 {
     let mut lines = input.as_ref().lines();
-    let times: Vec<u64> = parse_nums(&lines.next().unwrap());
-    let distances: Vec<u64> = parse_nums(&lines.next().unwrap());
+    let times: Vec<u64> = parse_nums(lines.next().unwrap());
+    let distances: Vec<u64> = parse_nums(lines.next().unwrap());
 
     times.into_iter().zip(distances).map(calculate).product()
 }
