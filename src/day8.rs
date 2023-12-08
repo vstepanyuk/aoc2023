@@ -1,5 +1,6 @@
-use num::integer::lcm;
 use std::collections::HashMap;
+
+use num::integer::lcm;
 
 const INPUT: &str = include_str!("../input/day8.txt");
 
@@ -33,22 +34,14 @@ fn calc_steps<F>(
 where
     F: Fn(&str) -> bool,
 {
-    let mut instructions = instructions.iter().cycle();
-    let mut result = 0;
-    let mut current = current;
-
-    while f(current) {
-        let rule = rules.get(current).unwrap();
-        current = match instructions.next().unwrap() {
-            'L' => rule[0],
-            'R' => rule[1],
-            _ => unreachable!(),
-        };
-
-        result += 1;
-    }
-
-    result
+    (0..)
+        .zip(instructions.iter().cycle())
+        .scan(current, |curr, (_, c)| {
+            *curr = rules.get(curr).unwrap()[(c == &'R') as usize];
+            f(curr).then_some(*curr)
+        })
+        .count()
+        + 1
 }
 
 fn vec_lcm(iter: &mut impl Iterator<Item = usize>) -> usize {
@@ -62,14 +55,17 @@ fn parse(input: &str) -> (Vec<char>, HashMap<&str, [&str; 2]>) {
     let instructions = lines.next().unwrap().chars().collect::<Vec<_>>();
     lines.next();
 
-    let mut rules = HashMap::new();
-    for line in lines {
-        let mut parts = line.split(" = ");
-        let key = parts.next().unwrap();
-        let (left, right) = parts.next().unwrap().split_once(", ").unwrap();
+    let rules = lines
+        .map(|line| {
+            let (key, parts) = line.split_once(" = ").unwrap();
+            let (left, right) = parts
+                .trim_matches(|c| c == '(' || c == ')')
+                .split_once(", ")
+                .unwrap();
 
-        rules.insert(key, [&left[1..], &right[..right.len() - 1]]);
-    }
+            (key, [left, right])
+        })
+        .collect();
 
     (instructions, rules)
 }

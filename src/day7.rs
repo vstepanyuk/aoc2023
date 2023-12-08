@@ -78,29 +78,29 @@ impl Hand {
         })
     }
 
-    fn is_full_house(&self) -> bool {
+    fn is32(&self) -> bool {
         let hm = self.hashmap();
         hm.values().contains(&3) && hm.values().contains(&2)
     }
 
-    fn is_five_of_a_kind(&self) -> bool {
+    fn is5(&self) -> bool {
         self.cards.iter().all_equal()
     }
 
-    fn is_four_of_a_kind(&self) -> bool {
+    fn is4(&self) -> bool {
         self.hashmap().values().contains(&4)
     }
 
-    fn is_three_of_a_kind(&self) -> bool {
-        !self.is_full_house() && self.hashmap().values().contains(&3)
+    fn is3(&self) -> bool {
+        !self.is32() && self.hashmap().values().contains(&3)
     }
 
-    fn is_two_pairs(&self) -> bool {
+    fn is22(&self) -> bool {
         self.hashmap().values().filter(|&&v| v == 2).count() == 2
     }
 
-    fn is_one_pair(&self) -> bool {
-        !self.is_full_house() && !self.is_two_pairs() && self.hashmap().values().contains(&2)
+    fn is2(&self) -> bool {
+        !self.is32() && !self.is22() && self.hashmap().values().contains(&2)
     }
 
     fn compare_cards(&self, other: &Self) -> Ordering {
@@ -166,51 +166,51 @@ impl PartialOrd for Hand {
 
 impl Ord for Hand {
     fn cmp(&self, other: &Self) -> Ordering {
-        if self.is_five_of_a_kind() && !other.is_five_of_a_kind() {
+        if self.is5() && !other.is5() {
             return Ordering::Greater;
         }
 
-        if other.is_five_of_a_kind() && !self.is_five_of_a_kind() {
+        if other.is5() && !self.is5() {
             return Ordering::Less;
         }
 
-        if self.is_four_of_a_kind() && !other.is_four_of_a_kind() {
+        if self.is4() && !other.is4() {
             return Ordering::Greater;
         }
 
-        if other.is_four_of_a_kind() && !self.is_four_of_a_kind() {
+        if other.is4() && !self.is4() {
             return Ordering::Less;
         }
 
-        if self.is_full_house() && !other.is_full_house() {
+        if self.is32() && !other.is32() {
             return Ordering::Greater;
         }
 
-        if other.is_full_house() && !self.is_full_house() {
+        if other.is32() && !self.is32() {
             return Ordering::Less;
         }
 
-        if self.is_three_of_a_kind() && !other.is_three_of_a_kind() {
+        if self.is3() && !other.is3() {
             return Ordering::Greater;
         }
 
-        if other.is_three_of_a_kind() && !self.is_three_of_a_kind() {
+        if other.is3() && !self.is3() {
             return Ordering::Less;
         }
 
-        if self.is_two_pairs() && !other.is_two_pairs() {
+        if self.is22() && !other.is22() {
             return Ordering::Greater;
         }
 
-        if other.is_two_pairs() && !self.is_two_pairs() {
+        if other.is22() && !self.is22() {
             return Ordering::Less;
         }
 
-        if self.is_one_pair() && !other.is_one_pair() {
+        if self.is2() && !other.is2() {
             return Ordering::Greater;
         }
 
-        if other.is_one_pair() && !self.is_one_pair() {
+        if other.is2() && !self.is2() {
             return Ordering::Less;
         }
 
