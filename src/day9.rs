@@ -7,7 +7,7 @@ struct Report(Vec<i64>);
 
 impl Report {
     fn new(input: impl AsRef<str>) -> Self {
-        Self(parse_nums(input.as_ref()))
+        Self(parse_nums(input))
     }
 
     fn extrapolate(&self, f: &impl Fn(&[(i64, i64)]) -> i64) -> i64 {
@@ -55,13 +55,12 @@ fn solve(input: impl AsRef<str>, f: impl Fn(&[(i64, i64)]) -> i64) -> i64 {
 mod tests {
     use super::*;
 
-    const INPUT: &str = "0 3 6 9 12 15
-1 3 6 10 15 21
-10 13 16 21 30 45";
-
     #[test]
     fn test_part1() {
-        assert_eq!(part1(INPUT), 114);
+        assert_eq!(
+            part1("0 3 6 9 12 15\n1 3 6 10 15 21\n10 13 16 21 30 45"),
+            114
+        );
     }
 
     #[test]

@@ -39,9 +39,18 @@ path = "src/day8.rs"
 name = "day9"
 path = "src/day9.rs"
 
+[[bin]]
+name = "day10"
+path = "src/day10.rs"
+
+[[bin]]
+name = "day11"
+path = "src/day11.rs"
+
 [lib]
 name = "aoc"
 
 [dependencies]
 itertools = "0.12"
 num = "0.4"
+pathfinding = "4.4"
