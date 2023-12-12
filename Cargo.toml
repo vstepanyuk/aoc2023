@@ -51,6 +51,7 @@ path = "src/day11.rs"
 name = "aoc"
 
 [dependencies]
+derive_more = { version = "1.0.0-beta.6", features = ["full"] }
 itertools = "0.12"
 num = "0.4"
 pathfinding = "4.4"
