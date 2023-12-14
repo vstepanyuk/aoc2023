@@ -13,7 +13,7 @@ impl Record {
     fn new(input: impl AsRef<str>) -> Self {
         let (pattern, rule) = input
             .as_ref()
-            .split_once(" ")
+            .split_once(' ')
             .map(|(pattern, rule)| (pattern.chars().collect(), parse_nums(rule)))
             .unwrap();
 
@@ -21,11 +21,10 @@ impl Record {
     }
 
     fn count(&self) -> usize {
-        self.count_inner(&self.pattern, &self.rule, &mut HashMap::new())
+        Self::count_inner(&self.pattern, &self.rule, &mut HashMap::new())
     }
 
     fn count_inner<'a>(
-        &self,
         pat: &'a [char],
         nums: &'a [usize],
         cache: &mut HashMap<(&'a [char], &'a [usize]), usize>,
@@ -44,7 +43,7 @@ impl Record {
 
         let mut result = 0;
         if matches!(pat[0], '.' | '?') {
-            result += self.count_inner(&pat[1..], &nums, cache);
+            result += Self::count_inner(&pat[1..], nums, cache);
         }
 
         if matches!(pat[0], '#' | '?')
@@ -58,7 +57,7 @@ impl Record {
                 &pat[nums[0] + 1..]
             };
 
-            result += self.count_inner(&slice, &nums[1..], cache)
+            result += Self::count_inner(slice, &nums[1..], cache)
         }
 
         cache.insert((pat, nums), result);
