@@ -14,7 +14,7 @@ where
         .collect()
 }
 
-#[derive(Debug, Copy, Clone, Display)]
+#[derive(Debug, Copy, Clone, Display, Hash, PartialEq, Eq, Ord, PartialOrd)]
 #[display("({x},{y})")]
 #[debug("({x},{y})")]
 pub struct Point2D<T> {

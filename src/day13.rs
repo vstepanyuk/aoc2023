@@ -23,8 +23,9 @@ impl Frame {
     }
 
     fn mirror_value(&self) -> usize {
-        self.find(&self.rows, 0, None, 100)
-            .or_else(|| self.find(&self.cols, 0, None, 1))
+        self.find(&self.rows, 0, None)
+            .map(|idx| (idx + 1) * 100)
+            .or_else(|| self.find(&self.cols, 0, None).map(|idx| idx + 1))
             .unwrap_or_default()
     }
 
@@ -39,13 +40,11 @@ impl Frame {
     }
 
     fn mirror_value_with_smudge(&self) -> usize {
-        let split_idx = self.find(&self.rows, 0, None, 1).map(|idx| idx - 1);
-
-        self.find(&self.rows, 1, split_idx, 100)
+        self.find(&self.rows, 1, self.find(&self.rows, 0, None))
+            .map(|idx| (idx + 1) * 100)
             .or_else(|| {
-                let split_idx = self.find(&self.cols, 0, None, 1).map(|idx| idx - 1);
-
-                self.find(&self.cols, 1, split_idx, 1)
+                self.find(&self.cols, 1, self.find(&self.cols, 0, None))
+                    .map(|idx| idx + 1)
             })
             .unwrap_or_default()
     }
@@ -55,7 +54,6 @@ impl Frame {
         items: &[Vec<T>],
         allowed_diff: usize,
         ignore: Option<usize>,
-        factor: usize,
     ) -> Option<usize> {
         let items_len = items.len();
 
@@ -75,7 +73,7 @@ impl Frame {
                     }
 
                     if ii == 0 || jj == items_len - 1 {
-                        return Some(((j + i) / 2 + 1) * factor);
+                        return Some((j + i) / 2);
                     }
 
                     ii -= 1;
