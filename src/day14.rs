@@ -10,7 +10,6 @@ type StoneSet = BTreeSet<(isize, isize)>;
 struct Platform {
     persistent: StoneSet,
     stones: StoneSet,
-    width: usize,
     height: usize,
 }
 
@@ -51,7 +50,6 @@ impl Platform {
         Self {
             persistent,
             stones,
-            width: width + 2,
             height: height + 2,
         }
     }
