@@ -1,5 +1,4 @@
 use indexmap::IndexMap;
-use itertools::Itertools;
 
 const INPUT: &str = include_str!("../input/day15.txt");
 
@@ -57,15 +56,8 @@ fn part1(input: impl AsRef<str>) -> usize {
 }
 
 fn part2(input: impl AsRef<str>) -> usize {
-    let actions = input
-        .as_ref()
-        .trim()
-        .split(',')
-        .map(Action::new)
-        .collect_vec();
-
     let mut boxes = vec![Box::default(); 265];
-    for action in actions {
+    for action in input.as_ref().trim().split(',').map(Action::new) {
         match action.operation {
             Operation::GoTo => {
                 boxes[action.box_id].lenses.shift_remove(action.label);
