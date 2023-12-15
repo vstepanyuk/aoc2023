@@ -17,7 +17,7 @@ fn hash(s: &str) -> usize {
 }
 
 fn part1(input: &str) -> usize {
-    input.trim().split(',').map(hash).sum()
+    input.split(',').map(hash).sum()
 }
 
 fn part2(input: &str) -> usize {
