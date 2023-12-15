@@ -16,13 +16,12 @@ fn hash(s: &str) -> usize {
         .fold(0, |hash, c| (hash + *c as usize) * 17 % 256)
 }
 
-fn part1(input: impl AsRef<str>) -> usize {
-    input.as_ref().trim().split(',').map(hash).sum()
+fn part1(input: &str) -> usize {
+    input.trim().split(',').map(hash).sum()
 }
 
-fn part2(input: impl AsRef<str>) -> usize {
+fn part2(input: &str) -> usize {
     input
-        .as_ref()
         .split(',')
         .map(|s| {
             let (label, value) = s.split_once(|c| matches!(c, '-' | '=')).unwrap();
