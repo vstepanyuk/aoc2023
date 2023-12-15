@@ -1,43 +1,8 @@
+use std::iter::repeat;
+
 use indexmap::IndexMap;
 
 const INPUT: &str = include_str!("../input/day15.txt");
-
-#[derive(Debug)]
-struct Action<'a> {
-    label: &'a str,
-    operation: Operation,
-    box_id: usize,
-}
-
-#[derive(Debug)]
-enum Operation {
-    GoTo,
-    FocalLength(usize),
-}
-
-#[derive(Debug, Default, Clone)]
-struct Box<'a> {
-    lenses: IndexMap<&'a str, usize>,
-}
-
-impl<'a> Action<'a> {
-    fn new(s: &'a str) -> Self {
-        let (label, value) = s.split_once(|c| matches!(c, '-' | '=')).unwrap();
-        let operation = s.chars().find(|c| matches!(*c, '-' | '=')).unwrap();
-
-        let operation = match operation {
-            '-' => Operation::GoTo,
-            '=' => Operation::FocalLength(value.parse().unwrap()),
-            _ => unreachable!("Invalid operation '{}'", operation),
-        };
-
-        Self {
-            label,
-            operation,
-            box_id: hash(label),
-        }
-    }
-}
 
 fn main() {
     println!("Part 1: {}", part1(INPUT));
@@ -56,26 +21,34 @@ fn part1(input: impl AsRef<str>) -> usize {
 }
 
 fn part2(input: impl AsRef<str>) -> usize {
-    let mut boxes = vec![Box::default(); 265];
-    for action in input.as_ref().trim().split(',').map(Action::new) {
-        match action.operation {
-            Operation::GoTo => {
-                boxes[action.box_id].lenses.shift_remove(action.label);
-            }
-            Operation::FocalLength(value) => {
-                *boxes[action.box_id]
-                    .lenses
-                    .entry(action.label)
-                    .or_insert(value) = value;
-            }
-        }
-    }
+    input
+        .as_ref()
+        .split(',')
+        .map(|s| {
+            let (label, value) = s.split_once(|c| matches!(c, '-' | '=')).unwrap();
+            let operation = s.chars().find(|c| matches!(*c, '-' | '=')).unwrap();
+            let op = (operation == '=').then(|| value.parse::<usize>().unwrap());
 
-    boxes
+            (label, hash(label), op)
+        })
+        .fold(
+            &mut Vec::from_iter(repeat(IndexMap::new()).take(256)),
+            |boxes, action| {
+                match action {
+                    (label, box_id, None) => {
+                        boxes[box_id].shift_remove(label);
+                    }
+                    (label, box_id, Some(value)) => {
+                        *boxes[box_id].entry(label).or_insert(value) = value;
+                    }
+                }
+
+                boxes
+            },
+        )
         .iter()
         .enumerate()
-        .filter(|(_, Box { lenses, .. })| !lenses.is_empty())
-        .flat_map(|(box_id, Box { lenses, .. })| {
+        .flat_map(|(box_id, lenses)| {
             lenses
                 .iter()
                 .enumerate()
