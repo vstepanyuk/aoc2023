@@ -13,7 +13,7 @@ fn main() {
 fn hash(s: &str) -> usize {
     s.as_bytes()
         .iter()
-        .fold(0, |hash, c| ((hash + *c as usize) * 17) % 256)
+        .fold(0, |hash, c| (hash + *c as usize) * 17 % 256)
 }
 
 fn part1(input: impl AsRef<str>) -> usize {
