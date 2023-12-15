@@ -49,9 +49,9 @@ fn part2(input: &str) -> usize {
         .enumerate()
         .flat_map(|(box_id, lenses)| {
             lenses
-                .iter()
+                .values()
                 .enumerate()
-                .map(move |(idx, (_, &fp))| (box_id + 1) * (idx + 1) * fp)
+                .map(move |(idx, &fp)| (box_id + 1) * (idx + 1) * fp)
         })
         .sum()
 }
