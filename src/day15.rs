@@ -1,3 +1,4 @@
+use indexmap::IndexMap;
 use itertools::Itertools;
 
 const INPUT: &str = include_str!("../input/day15.txt");
@@ -6,18 +7,18 @@ const INPUT: &str = include_str!("../input/day15.txt");
 struct Action<'a> {
     label: &'a str,
     operation: Operation,
-    box_id: u8,
+    box_id: usize,
 }
 
 #[derive(Debug)]
 enum Operation {
     GoTo,
-    FocalLength(u8),
+    FocalLength(usize),
 }
 
 #[derive(Debug, Default, Clone)]
 struct Box<'a> {
-    lenses: Vec<(&'a str, u8)>,
+    lenses: IndexMap<&'a str, usize>,
 }
 
 impl<'a> Action<'a> {
@@ -34,7 +35,7 @@ impl<'a> Action<'a> {
         Self {
             label,
             operation,
-            box_id: hash(label) as u8,
+            box_id: hash(label),
         }
     }
 }
@@ -45,13 +46,13 @@ fn main() {
 }
 
 #[inline]
-fn hash(s: &str) -> u64 {
+fn hash(s: &str) -> usize {
     s.as_bytes()
         .iter()
-        .fold(0, |hash, c| ((hash + *c as u64) * 17) % 256)
+        .fold(0, |hash, c| ((hash + *c as usize) * 17) % 256)
 }
 
-fn part1(input: impl AsRef<str>) -> u64 {
+fn part1(input: impl AsRef<str>) -> usize {
     input.as_ref().trim().split(',').map(hash).sum()
 }
 
@@ -67,26 +68,13 @@ fn part2(input: impl AsRef<str>) -> usize {
     for action in actions {
         match action.operation {
             Operation::GoTo => {
-                if let Some((idx, _)) = boxes[action.box_id as usize]
-                    .lenses
-                    .iter()
-                    .find_position(|&&(l, _)| l == action.label)
-                {
-                    boxes[action.box_id as usize].lenses.remove(idx);
-                }
+                boxes[action.box_id].lenses.shift_remove(action.label);
             }
             Operation::FocalLength(value) => {
-                if let Some((idx, _)) = boxes[action.box_id as usize]
+                *boxes[action.box_id]
                     .lenses
-                    .iter()
-                    .find_position(|&&(l, _)| l == action.label)
-                {
-                    boxes[action.box_id as usize].lenses[idx].1 = value;
-                } else {
-                    boxes[action.box_id as usize]
-                        .lenses
-                        .push((action.label, value))
-                }
+                    .entry(action.label)
+                    .or_insert(value) = value;
             }
         }
     }
@@ -94,13 +82,12 @@ fn part2(input: impl AsRef<str>) -> usize {
     boxes
         .iter()
         .enumerate()
-        .filter(|b| !b.1.lenses.is_empty())
-        .map(|(idx, b)| {
-            b.lenses
+        .filter(|(_, Box { lenses, .. })| !lenses.is_empty())
+        .flat_map(|(box_id, Box { lenses, .. })| {
+            lenses
                 .iter()
                 .enumerate()
-                .map(|(i, (_, v))| *v as usize * (i + 1) * (idx + 1))
-                .sum::<usize>()
+                .map(move |(idx, (_, &fp))| (box_id + 1) * (idx + 1) * fp)
         })
         .sum()
 }

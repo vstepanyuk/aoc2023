@@ -68,6 +68,7 @@ name = "aoc"
 
 [dependencies]
 derive_more = { version = "1.0.0-beta.6", features = ["full"] }
+indexmap = "2.1.0"
 itertools = "0.12"
 num = "0.4"
 pathfinding = "4.4"
