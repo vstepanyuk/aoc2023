@@ -1,4 +1,4 @@
-use std::collections::{HashSet, VecDeque};
+use std::collections::HashSet;
 
 use itertools::Itertools;
 use pathfinding::matrix::Matrix;
@@ -23,50 +23,48 @@ fn part1(input: &str) -> usize {
 }
 
 fn part2(input: &str) -> usize {
-    let matrix = Matrix::from_iter(input.lines().map(|line| line.chars().collect::<Vec<_>>()));
+    let grid = Matrix::from_iter(input.lines().map(|line| line.chars().collect::<Vec<_>>()));
 
-    (0..matrix.rows)
-        .flat_map(|row| [((row, 0), LEFT), ((row, matrix.columns - 1), RIGHT)])
+    (0..grid.rows)
+        .flat_map(|row| [((row, 0), LEFT), ((row, grid.columns - 1), RIGHT)])
         .chain(
-            (0..matrix.columns)
-                .flat_map(|column| [((0, column), DOWN), ((matrix.rows - 1, column), UP)]),
+            (0..grid.columns)
+                .flat_map(|column| [((0, column), DOWN), ((grid.rows - 1, column), UP)]),
         )
-        .map(|item| solve(&matrix, item))
+        .map(|item| solve(&grid, item))
         .max()
         .unwrap()
 }
 
-fn solve(matrix: &Matrix<char>, initial: ((usize, usize), (i8, i8))) -> usize {
+fn solve(grid: &Matrix<char>, initial: ((usize, usize), (i8, i8))) -> usize {
     let mut visited = HashSet::new();
+    let mut queue = vec![initial];
 
-    let mut queue = VecDeque::new();
-    queue.push_back(initial);
-
-    while let Some(((r, c), d)) = queue.pop_front() {
-        let current = match matrix.get((r, c)) {
-            Some(ch) if visited.insert(((r, c), d)) => ch,
+    while let Some(((row, col), dir)) = queue.pop() {
+        let current = match grid.get((row, col)) {
+            Some(ch) if visited.insert(((row, col), dir)) => ch,
             _ => continue,
         };
 
-        match (d, current) {
-            (LEFT, '.' | '-') | (DOWN, '/') | (UP, '\\') | ((_, 0), '-') if c > 0 => {
-                queue.push_back(((r, c - 1), LEFT));
-                if matches!((d, current), ((_, 0), '-')) {
-                    queue.push_back(((r, c + 1), RIGHT));
+        match (dir, current) {
+            (LEFT, '.' | '-') | (DOWN, '/') | (UP, '\\') | ((_, 0), '-') if col > 0 => {
+                queue.push(((row, col - 1), LEFT));
+                if dir.1 == 0 && current == &'-' {
+                    queue.push(((row, col + 1), RIGHT));
                 }
             }
-            (UP, '|' | '.') | (LEFT, '\\') | (RIGHT, '/') | ((0, _), '|') if r > 0 => {
-                queue.push_back(((r - 1, c), UP));
+            (UP, '|' | '.') | (LEFT, '\\') | (RIGHT, '/') | ((0, _), '|') if row > 0 => {
+                queue.push(((row - 1, col), UP));
 
-                if matches!((d, current), ((0, _), '|')) {
-                    queue.push_back(((r + 1, c), DOWN));
+                if dir.0 == 0 && current == &'|' {
+                    queue.push(((row + 1, col), DOWN));
                 }
             }
             (DOWN, '|' | '.') | (LEFT, '/') | (RIGHT, '\\') | ((0, _), '|') => {
-                queue.push_back(((r + 1, c), DOWN));
+                queue.push(((row + 1, col), DOWN));
             }
             (RIGHT, '.' | '-') | (DOWN, '\\') | (UP, '/') | ((_, 0), '-') => {
-                queue.push_back(((r, c + 1), RIGHT));
+                queue.push(((row, col + 1), RIGHT));
             }
             _ => {}
         }
