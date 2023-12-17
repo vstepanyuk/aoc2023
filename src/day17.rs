@@ -15,73 +15,53 @@ fn parse<T: TryFrom<u32>>(input: &str) -> Matrix<T> {
     }))
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Ord, PartialOrd)]
-struct State {
-    pos: (usize, usize),
-    dir: (isize, isize),
-    steps: usize,
-}
-
-impl State {
-    fn new(position: (usize, usize), direction: (isize, isize), steps: usize) -> Self {
-        Self {
-            pos: position,
-            dir: direction,
-            steps,
-        }
-    }
-}
-
 fn solve(grid: &Matrix<usize>, max_steps: usize, min_steps: Option<usize>) -> usize {
     dijkstra(
-        &State::new((0, 0), (0, 1), 0),
+        &((0, 0), (0, 1), 0),
         |curr| {
             let mut states = vec![];
 
-            if curr.steps < max_steps {
-                let next_row = curr.pos.0 as isize + curr.dir.0;
-                let next_column = curr.pos.1 as isize + curr.dir.1;
+            if curr.2 < max_steps {
+                let ((row, col), dir) = (curr.0, curr.1);
+                let (new_row, new_col) = (row as isize + dir.0, col as isize + dir.1);
 
-                if next_row >= 0 && next_column >= 0 {
-                    let next = (next_row as usize, next_column as usize);
-                    if let Some(&cost) = grid.get(next) {
-                        states.push((State::new(next, curr.dir, curr.steps + 1), cost));
+                if new_row >= 0 && new_col >= 0 {
+                    let new_pos = (new_row as usize, new_col as usize);
+                    if let Some(&cost) = grid.get(new_pos) {
+                        states.push(((new_pos, curr.1, curr.2 + 1), cost));
                     }
                 }
             }
 
-            if min_steps.is_some() && curr.steps < min_steps.unwrap() {
+            if min_steps.is_some() && curr.2 < min_steps.unwrap() {
                 // PART 2
                 return states;
             }
 
-            let directions = match curr.dir {
+            let directions = match curr.1 {
                 (0, _) => [(1, 0), (-1, 0)],
                 (_, 0) => [(0, 1), (0, -1)],
                 _ => unreachable!(),
             };
 
-            for dir in directions {
-                let next_row = curr.pos.0 as isize + dir.0;
-                let next_column = curr.pos.1 as isize + dir.1;
+            for (dr, dc) in directions {
+                let (row, col) = curr.0;
+                let (nr, nc) = (row as isize + dr, col as isize + dc);
 
-                if next_row < 0 || next_column < 0 {
+                if nr < 0 || nc < 0 {
                     continue;
                 }
 
-                if let Some(&cost) = grid.get((next_row as usize, next_column as usize)) {
-                    states.push((
-                        State::new((next_row as usize, next_column as usize), dir, 1),
-                        cost,
-                    ));
+                if let Some(&cost) = grid.get((nr as usize, nc as usize)) {
+                    states.push((((nr as usize, nc as usize), (dr, dc), 1), cost));
                 }
             }
 
             states
         },
         |state| {
-            state.pos == (grid.rows - 1, grid.columns - 1)
-                && (min_steps.is_none() || state.steps >= min_steps.unwrap()) // PART 2
+            state.0 == (grid.rows - 1, grid.columns - 1)
+                && (min_steps.is_none() || state.2 >= min_steps.unwrap()) // PART 2
         },
     )
     .unwrap()
