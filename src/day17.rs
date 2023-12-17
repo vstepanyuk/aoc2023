@@ -17,16 +17,16 @@ fn parse<T: TryFrom<u32>>(input: &str) -> Matrix<T> {
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Ord, PartialOrd)]
 struct State {
-    position: (usize, usize),
-    direction: (isize, isize),
+    pos: (usize, usize),
+    dir: (isize, isize),
     steps: usize,
 }
 
 impl State {
     fn new(position: (usize, usize), direction: (isize, isize), steps: usize) -> Self {
         Self {
-            position,
-            direction,
+            pos: position,
+            dir: direction,
             steps,
         }
     }
@@ -35,34 +35,35 @@ impl State {
 fn solve(grid: &Matrix<usize>, max_steps: usize, min_steps: Option<usize>) -> usize {
     dijkstra(
         &State::new((0, 0), (0, 1), 0),
-        |s| {
+        |curr| {
             let mut states = vec![];
 
-            if s.steps < max_steps {
-                let next_row = s.position.0 as isize + s.direction.0;
-                let next_column = s.position.1 as isize + s.direction.1;
+            if curr.steps < max_steps {
+                let next_row = curr.pos.0 as isize + curr.dir.0;
+                let next_column = curr.pos.1 as isize + curr.dir.1;
 
                 if next_row >= 0 && next_column >= 0 {
                     let next = (next_row as usize, next_column as usize);
                     if let Some(&cost) = grid.get(next) {
-                        states.push((State::new(next, s.direction, s.steps + 1), cost));
+                        states.push((State::new(next, curr.dir, curr.steps + 1), cost));
                     }
                 }
             }
 
-            if min_steps.is_some() && s.steps < min_steps.unwrap() {
+            if min_steps.is_some() && curr.steps < min_steps.unwrap() {
+                // PART 2
                 return states;
             }
 
-            let directions = match s.direction {
+            let directions = match curr.dir {
                 (0, _) => [(1, 0), (-1, 0)],
                 (_, 0) => [(0, 1), (0, -1)],
                 _ => unreachable!(),
             };
 
             for dir in directions {
-                let next_row = s.position.0 as isize + dir.0;
-                let next_column = s.position.1 as isize + dir.1;
+                let next_row = curr.pos.0 as isize + dir.0;
+                let next_column = curr.pos.1 as isize + dir.1;
 
                 if next_row < 0 || next_column < 0 {
                     continue;
@@ -79,8 +80,8 @@ fn solve(grid: &Matrix<usize>, max_steps: usize, min_steps: Option<usize>) -> us
             states
         },
         |state| {
-            state.position == (grid.rows - 1, grid.columns - 1)
-                && (min_steps.is_none() || state.steps >= min_steps.unwrap())
+            state.pos == (grid.rows - 1, grid.columns - 1)
+                && (min_steps.is_none() || state.steps >= min_steps.unwrap()) // PART 2
         },
     )
     .unwrap()
