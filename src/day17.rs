@@ -1,8 +1,3 @@
-use std::collections::{HashSet, VecDeque};
-
-use itertools::Itertools;
-use pathfinding::matrix::Matrix;
-
 const INPUT: &str = include_str!("../input/day17.txt");
 
 fn main() {
@@ -10,11 +5,11 @@ fn main() {
     println!("Part 2: {}", part2(INPUT));
 }
 
-fn part1(input: &str) -> usize {
+fn part1(_input: &str) -> usize {
     0
 }
 
-fn part2(input: &str) -> usize {
+fn part2(_input: &str) -> usize {
     0
 }
 
