@@ -52,46 +52,30 @@ fn solve(matrix: &Matrix<char>, initial: ((usize, usize), (i8, i8))) -> usize {
         let current = matrix.get((r, c)).unwrap();
 
         match (d, current) {
-            ((0, 1), '.' | '-') | ((1, 0), '\\') | ((-1, 0), '/') => {
-                if c + 1 < matrix.columns {
+            ((0, -1), '.' | '-') | ((1, 0), '/') | ((-1, 0), '\\') | ((_, 0), '-') if c > 0 => {
+                queue.push_back(((r, c - 1), (0, -1)));
+                if matches!((d, current), ((_, 0), '-')) && c + 1 < matrix.columns {
                     queue.push_back(((r, c + 1), (0, 1)));
                 }
             }
-            ((0, -1), '.' | '-') | ((1, 0), '/') | ((-1, 0), '\\') => {
-                if c > 0 {
-                    queue.push_back(((r, c - 1), (0, -1)));
-                }
-            }
-            ((1, 0), '|' | '.') | ((0, -1), '/') | ((0, 1), '\\') => {
-                if r + 1 < matrix.rows {
+            ((-1, 0), '|' | '.') | ((0, -1), '\\') | ((0, 1), '/') | ((0, _), '|') if r > 0 => {
+                queue.push_back(((r - 1, c), (-1, 0)));
+
+                if matches!((d, current), ((0, _), '|')) && r + 1 < matrix.rows {
                     queue.push_back(((r + 1, c), (1, 0)));
                 }
             }
-            ((-1, 0), '|' | '.') | ((0, -1), '\\') | ((0, 1), '/') => {
-                if r > 0 {
-                    queue.push_back(((r - 1, c), (-1, 0)));
-                }
+            ((1, 0), '|' | '.') | ((0, -1), '/') | ((0, 1), '\\') | ((0, _), '|')
+                if r + 1 < matrix.rows =>
+            {
+                queue.push_back(((r + 1, c), (1, 0)));
             }
-            // Split
-            ((0, _), '|') => {
-                if r + 1 < matrix.rows {
-                    queue.push_back(((r + 1, c), (1, 0)));
-                }
-                if r > 0 {
-                    queue.push_back(((r - 1, c), (-1, 0)));
-                }
+            ((0, 1), '.' | '-') | ((1, 0), '\\') | ((-1, 0), '/') | ((_, 0), '-')
+                if c + 1 < matrix.columns =>
+            {
+                queue.push_back(((r, c + 1), (0, 1)));
             }
-            ((_, 0), '-') => {
-                if c + 1 < matrix.columns {
-                    queue.push_back(((r, c + 1), (0, 1)));
-                }
-                if c > 0 {
-                    queue.push_back(((r, c - 1), (0, -1)));
-                }
-            }
-            _ => {
-                unreachable!("Invalid direction {:?} ({})", d, current);
-            }
+            _ => {}
         }
     }
 
