@@ -9,7 +9,7 @@ where
 {
     input
         .as_ref()
-        .split(|c: char| c != '-' && (c.is_ascii_whitespace() || c.is_ascii_punctuation()))
+        .split(|c: char| c != '-' && !c.is_ascii_digit())
         .filter_map(|n| n.parse().ok())
         .collect()
 }
