@@ -80,6 +80,10 @@ path = "src/day18.rs"
 name = "day19"
 path = "src/day19.rs"
 
+[[bin]]
+name = "day20"
+path = "src/day20.rs"
+
 [lib]
 name = "aoc"
 
@@ -91,3 +95,4 @@ num = "0.4"
 pathfinding = "4.4"
 log = "0.4.20"
 rayon = "1.8.0"
+derivative = "2.2.0"
